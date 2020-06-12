@@ -168,6 +168,7 @@ if __name__ == '__main__':
     class_obj = ProcessVideo('faster_rcnn_resnet50')
     # class_obj = ProcessVideo('yolo_v3')
 
-    filename = '../1.mov'
+    src = func.load_text('config/camera_list.txt')
+    cam_list = src.splitlines()
     # class_obj.process_video(filename, f_save=False)
-    class_obj.process_video_split(filename, f_save=False, f_show=False)
+    class_obj.process_video_split(cam_list[0], f_save=False, f_show=False)

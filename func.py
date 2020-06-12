@@ -40,6 +40,16 @@ def load_csv(filename):
         return []
 
 
+def load_text(filename):
+    if os.path.isfile(filename):
+        f = open(filename, 'r')
+        data = f.read()
+        f.close()
+        return data
+    else:
+        return []
+
+
 def check_rect_overlap(rect1, rect2):
     min_x1 = min(rect1[0], rect1[2])
     max_x1 = max(rect1[0], rect1[2])
