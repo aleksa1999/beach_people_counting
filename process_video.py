@@ -1,6 +1,27 @@
 
 import cv2
 import func
+import sys
+import os
+
+
+CAMERA_LIST = 'config/camera_list.txt'
+SERVER_URL = 'http://localhost:3000/beach_analysis/v1.0'
+
+
+def check_camera_list():
+    if not os.path.isfile(CAMERA_LIST):
+        print("Couldn't find the camera list file, please fill the camera IP address in here, " + CAMERA_LIST)
+        return None
+
+    src = func.load_text(CAMERA_LIST)
+    cam_list = src.splitlines()
+
+    if len(cam_list) == 0:
+        print("Couldn't find the camera info, please fill the camera IP address in here, " + CAMERA_LIST)
+        return None
+
+    return cam_list
 
 
 class ProcessVideo:
@@ -165,10 +186,12 @@ class ProcessVideo:
 
 
 if __name__ == '__main__':
+    camera_list = check_camera_list()
+    if camera_list is None:
+        sys.exit(0)
+
     class_obj = ProcessVideo('faster_rcnn_resnet50')
     # class_obj = ProcessVideo('yolo_v3')
 
-    src = func.load_text('config/camera_list.txt')
-    cam_list = src.splitlines()
     # class_obj.process_video(filename, f_save=False)
-    class_obj.process_video_split(cam_list[0], f_save=False, f_show=False)
+    class_obj.process_video_split(camera_list[0], f_save=False, f_show=False)
