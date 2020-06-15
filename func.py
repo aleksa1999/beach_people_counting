@@ -50,6 +50,12 @@ def load_text(filename):
         return []
 
 
+def save_text(filename, data):
+    f = open(filename, 'w')
+    f.write(data)
+    f.close()
+
+
 def check_rect_overlap(rect1, rect2):
     min_x1 = min(rect1[0], rect1[2])
     max_x1 = max(rect1[0], rect1[2])
@@ -81,3 +87,8 @@ def check_contain(rect_list, rect):
             break
 
     return f_same
+
+
+def rm_file(filename):
+    if os.path.isfile(filename):
+        os.remove(filename)

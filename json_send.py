@@ -18,9 +18,9 @@ def make_request_json(ip_addr, img_file, count=0):
     return json_data
 
 
-def send_request(req_json):
+def send_request(server, req_json):
 
-    response = requests.post(url=url_server, json=req_json)
+    response = requests.post(url=server, json=req_json)
     print("Server responded with %s" % response.status_code)
 
     response_json = response.json()
@@ -38,6 +38,6 @@ if __name__ == '__main__':
     # url_server = 'http://18.217.112.30:3000/api/card_ocr/v1.0'
 
     json_request = make_request_json(ip_addr='192.168.1.122', img_file=filename, count=10)
-    ret_response = send_request(json_request)
+    ret_response = send_request(url_server, json_request)
 
     print(json.dumps(ret_response, indent=4))

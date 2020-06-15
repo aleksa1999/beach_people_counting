@@ -1,16 +1,20 @@
 
 import cv2
-import func
-import sys
+import time
 import os
+import func
+from json_send import *
 
 
 CAMERA_LIST = 'config/camera_list.txt'
 SERVER_URL = 'http://localhost:3000/beach_analysis/v1.0'
+CAMERA_USER_NAME = 'admin'
+CAMERA_PASSWORD = ''
 
 
 def check_camera_list():
     if not os.path.isfile(CAMERA_LIST):
+        func.save_text(CAMERA_LIST, '')
         print("Couldn't find the camera list file, please fill the camera IP address in here, " + CAMERA_LIST)
         return None
 
@@ -89,8 +93,13 @@ class ProcessVideo:
         cap.release()
         cv2.destroyAllWindows()
 
-    def process_video_split(self, video_source, f_show=True, f_save=False):
-        cap = cv2.VideoCapture(video_source)
+    def process_video_split(self, video_source, f_send_server=True, f_show=True, f_save=False):
+        if video_source.count('.') == 3 and video_source.replace('.', '').isdigit():
+            cap = cv2.VideoCapture('rtsp://{}:{}@{}:554/cam/realmonitor?channel=1&subtype=0'.
+                                   format(CAMERA_USER_NAME, CAMERA_PASSWORD, video_source))
+        else:
+            cap = cv2.VideoCapture(video_source)
+
         video_w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         video_h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         start_h = int(video_h * 0.4)
@@ -151,6 +160,14 @@ class ProcessVideo:
                         new_rect_list.append(new_rect)
             valid_rects += new_rect_list
 
+            # ----------------------- Send the result to server --------------------------
+            if f_send_server:
+                temp_name = str(time.time()) + '.jpg'
+                cv2.imwrite(temp_name, frame)
+                json_req = make_request_json(ip_addr=video_source, img_file=temp_name, count=len(valid_rects))
+                send_request(SERVER_URL, json_req)
+                func.rm_file(temp_name)
+
             # ---------------------------- draw the result -------------------------------
             print('The are {} peoples.'.format(len(valid_rects)))
 
@@ -194,4 +211,4 @@ if __name__ == '__main__':
     # class_obj = ProcessVideo('yolo_v3')
 
     # class_obj.process_video(filename, f_save=False)
-    class_obj.process_video_split(camera_list[0], f_save=False, f_show=False)
+    class_obj.process_video_split(camera_list[0], f_send_server=True, f_save=False, f_show=False)
