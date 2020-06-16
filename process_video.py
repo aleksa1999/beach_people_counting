@@ -8,8 +8,8 @@ from json_send import *
 
 CAMERA_LIST = 'config/camera_list.txt'
 SERVER_URL = 'http://localhost:3000/beach_analysis/v1.0'
-CAMERA_USER_NAME = 'admin'
-CAMERA_PASSWORD = ''
+CAMERA_USER_NAME = 'Admin'
+CAMERA_PASSWORD = 'C0nc3ll0M4r1n@'
 
 
 def check_camera_list():
