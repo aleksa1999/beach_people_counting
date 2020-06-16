@@ -14,6 +14,8 @@ CAMERA_PASSWORD = 'C0nc3ll0M4r1n@'
 
 def check_camera_list():
     if not os.path.isfile(CAMERA_LIST):
+        if not os.path.isdir(os.path.split(CAMERA_LIST)[0]):
+            os.mkdir(os.path.split(CAMERA_LIST)[0])
         func.save_text(CAMERA_LIST, '')
         print("Couldn't find the camera list file, please fill the camera IP address in here, " + CAMERA_LIST)
         return None
