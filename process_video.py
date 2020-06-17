@@ -9,7 +9,7 @@ from json_send import *
 CAMERA_LIST = 'config/camera_list.txt'
 SERVER_URL = 'http://localhost:3000/beach_analysis/v1.0'
 CAMERA_USER_NAME = 'Admin'
-CAMERA_PASSWORD = 'C0nc3ll0M4r1n@'
+CAMERA_PASSWORD = 'C0nc3ll0M4r1n'
 
 
 def check_camera_list():
@@ -97,10 +97,13 @@ class ProcessVideo:
 
     def process_video_split(self, video_source, f_send_server=True, f_show=True, f_save=False):
         if video_source.count('.') == 3 and video_source.replace('.', '').isdigit():
-            cap = cv2.VideoCapture('rtsp://{}:{}@{}:554/cam/realmonitor?channel=1&subtype=0'.
-                                   format(CAMERA_USER_NAME, CAMERA_PASSWORD, video_source))
+            video_src = 'rtsp://{}:{}@{}:554/cam/realmonitor?channel=1&subtype=0'.\
+                format(CAMERA_USER_NAME, CAMERA_PASSWORD, video_source)
         else:
-            cap = cv2.VideoCapture(video_source)
+            video_src = video_source
+
+        print('Video Source is ' + video_src)
+        cap = cv2.VideoCapture(video_src)
 
         video_w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         video_h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
