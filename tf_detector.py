@@ -8,7 +8,11 @@ class TfDetector:
 
     def __init__(self, model_type='faster_rcnn_resnet50'):
         if model_type == 'faster_rcnn_resnet50':
-            model_name = 'frozen_inference_graph50.pb'
+            model_name = 'frozen_inference_graph_faster_50.pb'
+        elif model_type == 'faster_rcnn_resnet101':
+            model_name = 'frozen_inference_graph_faster_101.pb'
+        elif model_type == 'ssd_mobile_v2':
+            model_name = 'frozen_inference_graph_ssd_mobile_v2.pb'
         else:
             model_name = 'frozen_inference_graph.pb'
 

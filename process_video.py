@@ -1,33 +1,9 @@
-
-import cv2
-import time
-import os
-import func
+from config.setting import *
 from json_send import *
-
-
-CAMERA_LIST = 'config/camera_list.txt'
-SERVER_URL = 'http://localhost:3000/beach_analysis/v1.0'
-CAMERA_USER_NAME = 'Admin'
-CAMERA_PASSWORD = 'C0nc3ll0M4r1n'
-
-
-def check_camera_list():
-    if not os.path.isfile(CAMERA_LIST):
-        if not os.path.isdir(os.path.split(CAMERA_LIST)[0]):
-            os.mkdir(os.path.split(CAMERA_LIST)[0])
-        func.save_text(CAMERA_LIST, '')
-        print("Couldn't find the camera list file, please fill the camera IP address in here, " + CAMERA_LIST)
-        return None
-
-    src = func.load_text(CAMERA_LIST)
-    cam_list = src.splitlines()
-
-    if len(cam_list) == 0:
-        print("Couldn't find the camera info, please fill the camera IP address in here, " + CAMERA_LIST)
-        return None
-
-    return cam_list
+import func
+import time
+import cv2
+import sys
 
 
 class ProcessVideo:
@@ -82,7 +58,7 @@ class ProcessVideo:
             if not ret:
                 break
 
-            img_draw, valid_rects = self.process_image(frame)
+            img_draw, valid_rects = self.process_image(frame, DETECT_THRESHOLD)
 
             if f_save:
                 out.write(img_draw)
@@ -96,14 +72,8 @@ class ProcessVideo:
         cv2.destroyAllWindows()
 
     def process_video_split(self, video_source, f_send_server=True, f_show=True, f_save=False):
-        if video_source.count('.') == 3 and video_source.replace('.', '').isdigit():
-            video_src = 'rtsp://{}:{}@{}:554/cam/realmonitor?channel=1&subtype=0'.\
-                format(CAMERA_USER_NAME, CAMERA_PASSWORD, video_source)
-        else:
-            video_src = video_source
-
-        print('Video Source is ' + video_src)
-        cap = cv2.VideoCapture(video_src)
+        print('Video Source => ' + video_source)
+        cap = cv2.VideoCapture(video_source)
 
         video_w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         video_h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -126,10 +96,10 @@ class ProcessVideo:
             frame3 = frame[start_h:, :end_w].copy()
             frame4 = frame[start_h:, start_w:].copy()
 
-            _, valid_rects1 = self.process_image(frame1)
-            _, valid_rects2 = self.process_image(frame2)
-            _, valid_rects3 = self.process_image(frame3)
-            _, valid_rects4 = self.process_image(frame4)
+            _, valid_rects1 = self.process_image(frame1, DETECT_THRESHOLD)
+            _, valid_rects2 = self.process_image(frame2, DETECT_THRESHOLD)
+            _, valid_rects3 = self.process_image(frame3, DETECT_THRESHOLD)
+            _, valid_rects4 = self.process_image(frame4, DETECT_THRESHOLD)
 
             # -------------------------- combine the detection result ----------------------
             valid_rects = []
@@ -208,12 +178,13 @@ class ProcessVideo:
 
 
 if __name__ == '__main__':
-    camera_list = check_camera_list()
-    if camera_list is None:
-        sys.exit(0)
+    if len(sys.argv) > 1:
+        video_src = sys.argv[1]
+    else:
+        video_src = 'rtsp://{}:{}@{}:554/cam/realmonitor?channel=1&subtype=0'.\
+            format(CAMERA_USER_NAME, CAMERA_PASSWORD, CAMERA_IP)
 
-    class_obj = ProcessVideo('faster_rcnn_resnet50')
-    # class_obj = ProcessVideo('yolo_v3')
+    class_obj = ProcessVideo(MODEL_NAME)
 
     # class_obj.process_video(filename, f_save=False)
-    class_obj.process_video_split(camera_list[0], f_send_server=True, f_save=False, f_show=False)
+    class_obj.process_video_split(video_src, f_send_server=F_SEND_SERVER, f_save=F_WRITE_VIDEO, f_show=F_SHOW_RESULT)
