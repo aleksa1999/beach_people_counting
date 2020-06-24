@@ -1,4 +1,5 @@
-SERVER_URL = 'http://localhost:3000/beach_analysis/v1.0'
+# SERVER_URL = 'http://localhost:3000/beach_analysis/v1.0'
+SERVER_URL = 'http://13.93.78.173:3000/beach_analysis/v1.0'
 
 CAMERA_IP = '192.168.1.108'
 CAMERA_USER_NAME = 'admin'
@@ -11,6 +12,6 @@ MODEL_NAME = 'ssd_mobile_v2'
 
 DETECT_THRESHOLD = 0.2
 
-F_SEND_SERVER = False
+F_SEND_SERVER = True
 F_WRITE_VIDEO = False
 F_SHOW_RESULT = False
